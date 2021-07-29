@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
+import 'package:wakelock/wakelock.dart';
 
 class VideoPage extends StatefulWidget {
   const VideoPage({Key? key, required this.videoUrl}) : super(key: key);
@@ -17,6 +18,7 @@ class _VideoPageState extends State<VideoPage> {
 
   @override
   void initState() {
+    Wakelock.enable();
     _controller = VideoPlayerController.network(
       widget.videoUrl
     );
@@ -34,6 +36,7 @@ class _VideoPageState extends State<VideoPage> {
   @override
   void dispose() {
     _controller.dispose();
+    Wakelock.disable();
     super.dispose();
   }
 
