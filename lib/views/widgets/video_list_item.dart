@@ -45,7 +45,7 @@ class VideoListItemWidget extends StatelessWidget {
               boxShadow: [BoxShadow(color: Colors.grey, blurRadius: 1, offset: Offset(2, 1))],
               color: Colors.white
           ),
-          margin: const EdgeInsets.all(4),
+          margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 32),
         )
     );
   }
