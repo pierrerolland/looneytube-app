@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:video_player/video_player.dart';
 import 'package:wakelock/wakelock.dart';
 
@@ -19,6 +20,8 @@ class _VideoPageState extends State<VideoPage> {
   @override
   void initState() {
     Wakelock.enable();
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
+
     _controller = VideoPlayerController.network(
       widget.videoUrl
     );
@@ -37,6 +40,7 @@ class _VideoPageState extends State<VideoPage> {
   void dispose() {
     _controller.dispose();
     Wakelock.disable();
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
     super.dispose();
   }
 
