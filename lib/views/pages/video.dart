@@ -89,9 +89,9 @@ class _VideoPageState extends State<VideoPage> {
           forwardKeySet: ForwardIntent()
         },
         actions: {
-          RewindIntent: CallbackAction(onInvoke: (_) => _rewind),
-          ForwardIntent: CallbackAction(onInvoke: (_) => _forward),
-          ActivateIntent: CallbackAction(onInvoke: (_) => _pauseOrPlay),
+          RewindIntent: CallbackAction(onInvoke: (_) => _rewind.call()),
+          ForwardIntent: CallbackAction(onInvoke: (_) => _forward.call()),
+          ActivateIntent: CallbackAction(onInvoke: (_) => _pauseOrPlay.call()),
         },
         child: Scaffold(
           backgroundColor: Colors.black,
