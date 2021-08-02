@@ -11,6 +11,7 @@ On Android side, the app is intended to work on phones, tablets and TVs
 
 LOONEYTUBE_USER=admin
 LOONEYTUBE_PASSWORD=password
+LOONEYTUBE_API=https://api.looneytube.tv
 ```
 
 ## Run 

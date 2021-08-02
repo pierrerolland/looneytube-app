@@ -26,7 +26,7 @@ Future<http.Response> _get(String url) async {
   }
 
   final response = await http.get(
-    Uri.parse('https://api.looneytube.tv/$url'),
+    Uri.parse('${dotenv.env['LOONEYTUBE_API']}/$url'),
     headers: (await _getAuthorizedHeaders())
   );
 
@@ -41,7 +41,7 @@ Future<http.Response> _get(String url) async {
 
 _login() async {
   final response = await http.post(
-      Uri.parse('https://api.looneytube.tv/login'),
+      Uri.parse('${dotenv.env['LOONEYTUBE_API']}/login'),
       body: {
         '_username': dotenv.env['LOONEYTUBE_USER'],
         '_password': dotenv.env['LOONEYTUBE_PASSWORD']
