@@ -2,15 +2,22 @@
 
 The looneytube.tv application
 
-## Getting Started
+On Android side, the app is intended to work on phones, tablets and TVs
 
-This project is a starting point for a Flutter application.
+## Setup your env
 
-A few resources to get you started if this is your first Flutter project:
+```
+.env
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+LOONEYTUBE_USER=admin
+LOONEYTUBE_PASSWORD=password
+```
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Run 
+
+Use Android Studio to run and release the app.
+
+## Video controls
+
+- On phones and tablets, tap to pause or play, double tap to rewind or forward
+- On TVs, press the select button to pause or play, press left or right to rewind or forward
