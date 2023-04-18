@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:looneytube/views/widgets/cast.dart';
 import 'package:video_player/video_player.dart';
 import 'package:wakelock/wakelock.dart';
 
@@ -28,6 +29,7 @@ class _VideoPageState extends State<VideoPage> {
   late VideoPlayerController _controller;
   late Future<void> _initializeVideoPlayerFuture;
   late double _lastDoubleTapX;
+  bool _castVisible = true;
 
   @override
   void initState() {
@@ -38,6 +40,8 @@ class _VideoPageState extends State<VideoPage> {
       widget.videoUrl
     );
 
+    showCastButton();
+
     _initializeVideoPlayerFuture = _controller.initialize().then((_) => {
       setState(() {
         _controller.play();
@@ -46,6 +50,17 @@ class _VideoPageState extends State<VideoPage> {
     _controller.setLooping(false);
 
     super.initState();
+  }
+
+  void showCastButton() {
+    setState(() {
+      _castVisible = true;
+    });
+    Future.delayed(const Duration(seconds: 3), () {
+      setState((){
+        _castVisible = false;
+      });
+    });
   }
 
   @override
@@ -59,6 +74,7 @@ class _VideoPageState extends State<VideoPage> {
   @override
   Widget build(BuildContext context) {
     void _pauseOrPlay() {
+      showCastButton();
       setState(() {
         if (_controller.value.isPlaying) {
           _controller.pause();
@@ -68,10 +84,24 @@ class _VideoPageState extends State<VideoPage> {
       });
     }
     void _rewind() async {
+      showCastButton();
       await _controller.seekTo(((await _controller.position) ?? const Duration()) - const Duration(seconds: 30));
     }
     void _forward () async {
+      showCastButton();
       await _controller.seekTo(((await _controller.position) ?? const Duration()) + const Duration(seconds: 30));
+    }
+    Stack _getStack() {
+      if (_castVisible) {
+        return Stack(children: [
+          VideoPlayer(_controller),
+          Cast(videoUrl: _controller.dataSource),
+        ]);
+      }
+
+      return Stack(children: [
+        VideoPlayer(_controller),
+      ]);
     }
 
     return GestureDetector(
@@ -102,7 +132,7 @@ class _VideoPageState extends State<VideoPage> {
                   if (snapshot.connectionState == ConnectionState.done) {
                     return AspectRatio(
                       aspectRatio: _controller.value.aspectRatio,
-                      child: VideoPlayer(_controller),
+                      child: _getStack(),
                     );
                   } else {
                     return const Center(

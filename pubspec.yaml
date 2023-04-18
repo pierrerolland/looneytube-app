@@ -39,6 +39,7 @@ dependencies:
   video_player: ^2.1.12
   flutter_dotenv: ^5.0.0
   wakelock: ^0.5.2
+  flutter_cast_video: ^1.2.0
 
 dev_dependencies:
   flutter_test:
