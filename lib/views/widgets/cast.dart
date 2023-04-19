@@ -2,9 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_cast_video/flutter_cast_video.dart';
 
 class Cast extends StatefulWidget {
-  const Cast({Key? key, required this.videoUrl}) : super(key: key);
+  const Cast({
+    Key? key,
+    required this.videoUrl,
+    required this.onSessionStarted,
+    required this.onSessionEnded
+  }) : super(key: key);
 
   final String videoUrl;
+  final VoidCallback onSessionStarted;
+  final VoidCallback onSessionEnded;
 
   @override
   _CastState createState() => _CastState();
@@ -23,6 +30,10 @@ class _CastState extends State<Cast> {
       },
       onSessionStarted: () {
         _controller.loadMedia(widget.videoUrl);
+        widget.onSessionStarted();
+      },
+      onSessionEnded: () {
+        widget.onSessionEnded();
       },
     );
   }

@@ -30,6 +30,7 @@ class _VideoPageState extends State<VideoPage> {
   late Future<void> _initializeVideoPlayerFuture;
   late double _lastDoubleTapX;
   bool _castVisible = true;
+  bool _castStarted = false;
 
   @override
   void initState() {
@@ -92,10 +93,49 @@ class _VideoPageState extends State<VideoPage> {
       await _controller.seekTo(((await _controller.position) ?? const Duration()) + const Duration(seconds: 30));
     }
     Stack _getStack() {
+      if (_castStarted) {
+        return Stack(children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Image.asset(
+                'images/cast.png',
+                fit: BoxFit.fill,
+              )
+            ],
+          ),
+          Cast(
+            videoUrl: widget.videoUrl,
+            onSessionStarted: () {
+              setState(() {
+                _castStarted = true;
+              });
+            },
+            onSessionEnded: () {
+              setState(() {
+                _castStarted = false;
+              });
+            },
+          ),
+        ]);
+      }
+
       if (_castVisible) {
         return Stack(children: [
           VideoPlayer(_controller),
-          Cast(videoUrl: _controller.dataSource),
+          Cast(
+            videoUrl: widget.videoUrl,
+            onSessionStarted: () {
+              setState(() {
+                _castStarted = true;
+              });
+            },
+            onSessionEnded: () {
+              setState(() {
+                _castStarted = false;
+              });
+            },
+          ),
         ]);
       }
 
