@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_cast_video/flutter_cast_video.dart';
+import 'package:looneytube/application/local_storage.dart';
 
 class Cast extends StatefulWidget {
   const Cast({
     Key? key,
-    required this.videoUrl,
     required this.onSessionStarted,
     required this.onSessionEnded
   }) : super(key: key);
 
-  final String videoUrl;
   final VoidCallback onSessionStarted;
   final VoidCallback onSessionEnded;
 
@@ -20,6 +19,13 @@ class Cast extends StatefulWidget {
 class _CastState extends State<Cast> {
   late ChromeCastController _controller;
 
+  void loadVideo(String? videoUrl) {
+    if (videoUrl != null) {
+      _controller.loadMedia(videoUrl);
+      widget.onSessionStarted();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return ChromeCastButton(
@@ -29,8 +35,7 @@ class _CastState extends State<Cast> {
         _controller.addSessionListener();
       },
       onSessionStarted: () {
-        _controller.loadMedia(widget.videoUrl);
-        widget.onSessionStarted();
+        getSingleFromLocalStorage('video', 'last').then(loadVideo);
       },
       onSessionEnded: () {
         widget.onSessionEnded();

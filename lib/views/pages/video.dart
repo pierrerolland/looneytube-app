@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:looneytube/application/local_storage.dart';
 import 'package:looneytube/views/widgets/cast.dart';
 import 'package:video_player/video_player.dart';
 import 'package:wakelock/wakelock.dart';
@@ -45,6 +46,7 @@ class _VideoPageState extends State<VideoPage> {
 
     _initializeVideoPlayerFuture = _controller.initialize().then((_) => {
       setState(() {
+        storeSingle('video', 'last', widget.videoUrl);
         _controller.play();
       })
     });
@@ -105,7 +107,6 @@ class _VideoPageState extends State<VideoPage> {
             ],
           ),
           Cast(
-            videoUrl: widget.videoUrl,
             onSessionStarted: () {
               setState(() {
                 _castStarted = true;
@@ -124,7 +125,6 @@ class _VideoPageState extends State<VideoPage> {
         return Stack(children: [
           VideoPlayer(_controller),
           Cast(
-            videoUrl: widget.videoUrl,
             onSessionStarted: () {
               setState(() {
                 _castStarted = true;
