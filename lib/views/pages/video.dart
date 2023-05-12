@@ -44,6 +44,8 @@ class _VideoPageState extends State<VideoPage> {
 
     showCastButton();
 
+    storeSingle('watched', widget.videoUrl, 'watched');
+
     _initializeVideoPlayerFuture = _controller.initialize().then((_) => {
       setState(() {
         storeSingle('video', 'last', widget.videoUrl);

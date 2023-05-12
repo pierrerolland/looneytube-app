@@ -30,7 +30,7 @@ class _VideoListWidgetState extends State<VideoListWidget> {
           if (snapshot.hasData) {
             return Column(
                 children: [
-                  Text(snapshot.data!.name, style: Theme.of(context).textTheme.headline4),
+                  Text(snapshot.data!.name, style: Theme.of(context).textTheme.headlineMedium),
                   ...snapshot.data!.videos!.map((e) => VideoListItemWidget(video: e, onTap: widget.onVideoTap)).toList()
                 ]
             );

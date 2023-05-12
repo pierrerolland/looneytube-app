@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:looneytube/application/entities/video.dart';
+import 'package:looneytube/application/local_storage.dart';
 
-class VideoListItemWidget extends StatelessWidget {
+class VideoListItemWidget extends StatefulWidget {
   const VideoListItemWidget({Key? key, required this.video, required this.onTap}) : super(key: key);
 
   final Video video;
@@ -9,41 +10,55 @@ class VideoListItemWidget extends StatelessWidget {
   final Function onTap;
 
   @override
+  _VideoListItemWidgetState createState() => _VideoListItemWidgetState();
+}
+
+class _VideoListItemWidgetState extends State<VideoListItemWidget> {
+  bool _watched = false;
+
+  @override
+  void initState() {
+    getSingleFromLocalStorage('watched', widget.video.fileName).then((v) => {
+      setState(() {
+        _watched = v == 'watched';
+      })
+    });
+
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return InkWell(
         onTap: () {
-          onTap(video);
+          widget.onTap(widget.video);
         },
         child: Container(
+          height: 128,
           child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.end,
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              Container(
-                width: 128,
-                height: 128,
-                child: Image.network(
-                  video.picture ?? '',
-                  height: 128,
-                ),
-                margin: const EdgeInsets.all(8),
-                decoration: const BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(8))
-                ),
-              ),
               Expanded(
                   child: Text(
-                    video.name,
+                    widget.video.name,
                     style: const TextStyle(
+                      color: Colors.white,
+                      backgroundColor: Colors.black,
                       fontWeight: FontWeight.bold,
                     ),
                   )
               )
             ],
           ),
-          decoration: const BoxDecoration(
-              boxShadow: [BoxShadow(color: Colors.grey, blurRadius: 1, offset: Offset(2, 1))],
-              color: Colors.white
+          decoration: BoxDecoration(
+              image: DecorationImage(
+                  image: NetworkImage(widget.video.picture ?? ''),
+                  fit: BoxFit.cover
+              ),
+              boxShadow: const [BoxShadow(color: Colors.grey, blurRadius: 1, offset: Offset(2, 1))],
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: _watched ? Colors.green : Colors.white, width: 2)
           ),
           margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 32),
         )
