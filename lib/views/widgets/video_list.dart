@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:looneytube/application/client.dart';
 import 'package:looneytube/application/entities/category.dart';
@@ -28,12 +30,17 @@ class _VideoListWidgetState extends State<VideoListWidget> {
         future: futureCategory,
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            return Column(
+            return Expanded(child: Column(
                 children: [
                   Text(snapshot.data!.name, style: Theme.of(context).textTheme.headlineMedium),
-                  ...snapshot.data!.videos!.map((e) => VideoListItemWidget(video: e, onTap: widget.onVideoTap)).toList()
+                  GridView.count(
+                    shrinkWrap: true,
+                    childAspectRatio: 4,
+                    crossAxisCount: 2,
+                    children: snapshot.data!.videos!.map((e) => VideoListItemWidget(video: e, onTap: widget.onVideoTap)).toList(),
+                  ),
                 ]
-            );
+            ));
           } else if (snapshot.hasError) {
             return Text('${snapshot.error}');
           }
