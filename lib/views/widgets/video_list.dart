@@ -21,20 +21,13 @@ class _VideoListWidgetState extends State<VideoListWidget> {
   late Future<Category> futureCategory;
   List<Video> allVideos = [];
   int page = 1;
+  int totalPages = 1;
 
   List<Video> currentPageVideos() {
     return allVideos.sublist(
         (page - 1) * VideoListWidget.itemsPerPage,
         min(allVideos.length, (page - 1) * VideoListWidget.itemsPerPage + VideoListWidget.itemsPerPage)
     );
-  }
-
-  int totalPages() {
-    if (allVideos.length == (allVideos.length / VideoListWidget.itemsPerPage).round() * VideoListWidget.itemsPerPage) {
-      return (allVideos.length / VideoListWidget.itemsPerPage).round();
-    }
-
-    return (allVideos.length / VideoListWidget.itemsPerPage).round() + 1;
   }
 
   @override
@@ -44,6 +37,9 @@ class _VideoListWidgetState extends State<VideoListWidget> {
     futureCategory.then((category) => {
         setState(() {
           allVideos = category.videos!;
+          totalPages = category.videos!.length == (category.videos!.length / VideoListWidget.itemsPerPage).floor() * VideoListWidget.itemsPerPage
+              ? (category.videos!.length / VideoListWidget.itemsPerPage).floor()
+              : (category.videos!.length / VideoListWidget.itemsPerPage).ceil();
         })
     });
   }
@@ -65,7 +61,7 @@ class _VideoListWidgetState extends State<VideoListWidget> {
       );
     }
 
-    if (page < totalPages()) {
+    if (page < totalPages) {
       children.add(
           IconButton(
             icon: const Icon(Icons.arrow_right),
