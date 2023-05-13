@@ -18,7 +18,7 @@ class _VideoListItemWidgetState extends State<VideoListItemWidget> {
 
   @override
   void initState() {
-    getSingleFromLocalStorage('watched', widget.video.fileName).then((v) => {
+    getSingleFromLocalStorage(widget.video.fileName, 'watched').then((v) => {
       setState(() {
         _watched = v == 'watched';
       })
