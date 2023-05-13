@@ -1,11 +1,13 @@
-import 'dart:developer';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:looneytube/application/client.dart';
 import 'package:looneytube/application/entities/category.dart';
+import 'package:looneytube/application/entities/video.dart';
 import 'package:looneytube/views/widgets/video_list_item.dart';
 
 class VideoListWidget extends StatefulWidget {
+  static const itemsPerPage = 12;
   const VideoListWidget({Key? key, required this.categorySlug, required this.onVideoTap}) : super(key: key);
 
   final String categorySlug;
@@ -17,11 +19,70 @@ class VideoListWidget extends StatefulWidget {
 
 class _VideoListWidgetState extends State<VideoListWidget> {
   late Future<Category> futureCategory;
+  List<Video> allVideos = [];
+  int page = 1;
+
+  List<Video> currentPageVideos() {
+    return allVideos.sublist(
+        (page - 1) * VideoListWidget.itemsPerPage,
+        min(allVideos.length, (page - 1) * VideoListWidget.itemsPerPage + VideoListWidget.itemsPerPage)
+    );
+  }
+
+  int totalPages() {
+    if (allVideos.length == (allVideos.length / VideoListWidget.itemsPerPage).round() * VideoListWidget.itemsPerPage) {
+      return (allVideos.length / VideoListWidget.itemsPerPage).round();
+    }
+
+    return (allVideos.length / VideoListWidget.itemsPerPage).round() + 1;
+  }
 
   @override
   void initState() {
     super.initState();
     futureCategory = fetchCategory(widget.categorySlug);
+    futureCategory.then((category) => {
+        setState(() {
+          allVideos = category.videos!;
+        })
+    });
+  }
+
+  Widget buildPaginationButtons() {
+    List<IconButton> children = [];
+
+    if (page > 1) {
+      children.add(
+          IconButton(
+            icon: const Icon(Icons.arrow_left),
+            tooltip: 'Page précédente',
+            onPressed: () {
+              setState(() {
+                page--;
+              });
+            },
+          )
+      );
+    }
+
+    if (page < totalPages()) {
+      children.add(
+          IconButton(
+            icon: const Icon(Icons.arrow_right),
+            tooltip: 'Page suivante',
+            onPressed: () {
+              setState(() {
+                page++;
+              });
+            },
+          )
+      );
+    }
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: children,
+    );
   }
 
   @override
@@ -30,17 +91,18 @@ class _VideoListWidgetState extends State<VideoListWidget> {
         future: futureCategory,
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            return Expanded(child: Column(
+            return Column(
                 children: [
                   Text(snapshot.data!.name, style: Theme.of(context).textTheme.headlineMedium),
                   GridView.count(
                     shrinkWrap: true,
-                    childAspectRatio: 4,
-                    crossAxisCount: 2,
-                    children: snapshot.data!.videos!.map((e) => VideoListItemWidget(video: e, onTap: widget.onVideoTap)).toList(),
+                    childAspectRatio: 2,
+                    crossAxisCount: 4,
+                    children: currentPageVideos().map((e) => VideoListItemWidget(video: e, onTap: widget.onVideoTap)).toList(),
                   ),
+                  buildPaginationButtons()
                 ]
-            ));
+            );
           } else if (snapshot.hasError) {
             return Text('${snapshot.error}');
           }
