@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:looneytube/application/local_storage.dart';
-import 'package:looneytube/views/widgets/cast.dart';
 import 'package:video_player/video_player.dart';
 import 'package:wakelock/wakelock.dart';
 
@@ -30,8 +29,6 @@ class _VideoPageState extends State<VideoPage> {
   late VideoPlayerController _controller;
   late Future<void> _initializeVideoPlayerFuture;
   late double _lastDoubleTapX;
-  bool _castVisible = true;
-  bool _castStarted = false;
 
   @override
   void initState() {
@@ -41,8 +38,6 @@ class _VideoPageState extends State<VideoPage> {
     _controller = VideoPlayerController.network(
       widget.videoUrl
     );
-
-    showCastButton();
 
     storeSingle('watched', widget.videoUrl, 'watched');
 
@@ -57,17 +52,6 @@ class _VideoPageState extends State<VideoPage> {
     super.initState();
   }
 
-  void showCastButton() {
-    setState(() {
-      _castVisible = true;
-    });
-    Future.delayed(const Duration(seconds: 3), () {
-      setState((){
-        _castVisible = false;
-      });
-    });
-  }
-
   @override
   void dispose() {
     _controller.dispose();
@@ -79,7 +63,6 @@ class _VideoPageState extends State<VideoPage> {
   @override
   Widget build(BuildContext context) {
     void _pauseOrPlay() {
-      showCastButton();
       setState(() {
         if (_controller.value.isPlaying) {
           _controller.pause();
@@ -89,58 +72,12 @@ class _VideoPageState extends State<VideoPage> {
       });
     }
     void _rewind() async {
-      showCastButton();
       await _controller.seekTo(((await _controller.position) ?? const Duration()) - const Duration(seconds: 30));
     }
     void _forward () async {
-      showCastButton();
       await _controller.seekTo(((await _controller.position) ?? const Duration()) + const Duration(seconds: 30));
     }
     Stack _getStack() {
-      if (_castStarted) {
-        return Stack(children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Image.asset(
-                'images/cast.png',
-                fit: BoxFit.fill,
-              )
-            ],
-          ),
-          Cast(
-            onSessionStarted: () {
-              setState(() {
-                _castStarted = true;
-              });
-            },
-            onSessionEnded: () {
-              setState(() {
-                _castStarted = false;
-              });
-            },
-          ),
-        ]);
-      }
-
-      if (_castVisible) {
-        return Stack(children: [
-          VideoPlayer(_controller),
-          Cast(
-            onSessionStarted: () {
-              setState(() {
-                _castStarted = true;
-              });
-            },
-            onSessionEnded: () {
-              setState(() {
-                _castStarted = false;
-              });
-            },
-          ),
-        ]);
-      }
-
       return Stack(children: [
         VideoPlayer(_controller),
       ]);
