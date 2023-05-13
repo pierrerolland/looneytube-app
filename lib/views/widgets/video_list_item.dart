@@ -28,6 +28,19 @@ class _VideoListItemWidgetState extends State<VideoListItemWidget> {
   }
 
   @override
+  void didUpdateWidget(VideoListItemWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (widget.video.fileName != oldWidget.video.fileName) {
+      getSingleFromLocalStorage(widget.video.fileName, 'watched').then((v) => {
+        setState(() {
+          _watched = v == 'watched';
+        })
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return InkWell(
         onTap: () {
