@@ -22,3 +22,9 @@ Use Android Studio to run and release the app.
 
 - On phones and tablets, tap to pause or play, double tap to rewind or forward
 - On TVs, press the select button to pause or play, press left or right to rewind or forward
+
+## Three branches
+
+Common evolutions must be performed in `master`
+
+Then, merged into `phone` and `android-tv` that hold the specific developments
