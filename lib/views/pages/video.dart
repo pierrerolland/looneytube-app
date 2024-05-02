@@ -84,6 +84,9 @@ class _VideoPageState extends State<VideoPage> {
         VlcPlayer(
             controller: _controller,
             aspectRatio: screenSize.width / screenSize.height,
+            placeholder: const Center(
+              child: CircularProgressIndicator(),
+            ),
         ),
       ]);
     }
