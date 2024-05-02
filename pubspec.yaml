@@ -36,7 +36,7 @@ dependencies:
   cupertino_icons: ^1.0.2
   http: ^1.2.1
   localstore: ^1.2.0
-  video_player: ^2.8.6
+  flutter_vlc_player: ^7.4.1
   flutter_dotenv: ^5.0.0
   wakelock: ^0.6.2
 

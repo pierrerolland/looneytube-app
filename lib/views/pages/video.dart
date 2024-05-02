@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_vlc_player/flutter_vlc_player.dart';
 import 'package:looneytube/application/local_storage.dart';
-import 'package:video_player/video_player.dart';
 import 'package:wakelock/wakelock.dart';
 
 final rewindKeySet = LogicalKeySet(
@@ -26,7 +26,7 @@ class VideoPage extends StatefulWidget {
 }
 
 class _VideoPageState extends State<VideoPage> {
-  late VideoPlayerController _controller;
+  late VlcPlayerController _controller;
   late Future<void> _initializeVideoPlayerFuture;
   late double _lastDoubleTapX;
 
@@ -35,17 +35,17 @@ class _VideoPageState extends State<VideoPage> {
     Wakelock.enable();
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
 
-    _controller = VideoPlayerController.network(
+    _controller = VlcPlayerController.network(
       widget.videoUrl
     );
 
     storeSingle(widget.videoUrl, 'watched', 'watched');
 
-    _initializeVideoPlayerFuture = _controller.initialize().then((_) => {
+    _initializeVideoPlayerFuture = _controller.initialize().then((_) {
       setState(() {
         storeSingle('video', 'last', widget.videoUrl);
         _controller.play();
-      })
+      });
     });
     _controller.setLooping(false);
 
@@ -72,14 +72,19 @@ class _VideoPageState extends State<VideoPage> {
       });
     }
     void _rewind() async {
-      await _controller.seekTo(((await _controller.position) ?? const Duration()) - const Duration(seconds: 30));
+      await _controller.seekTo((await _controller.getPosition()) - const Duration(seconds: 30));
     }
     void _forward () async {
-      await _controller.seekTo(((await _controller.position) ?? const Duration()) + const Duration(seconds: 30));
+      await _controller.seekTo((await _controller.getPosition()) + const Duration(seconds: 30));
     }
     Stack _getStack() {
+      final screenSize = MediaQuery.of(context).size;
+
       return Stack(children: [
-        VideoPlayer(_controller),
+        VlcPlayer(
+            controller: _controller,
+            aspectRatio: screenSize.width / screenSize.height,
+        ),
       ]);
     }
 
@@ -110,7 +115,7 @@ class _VideoPageState extends State<VideoPage> {
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.done) {
                     return AspectRatio(
-                      aspectRatio: _controller.value.aspectRatio,
+                      aspectRatio: 16 / 9,
                       child: _getStack(),
                     );
                   } else {
