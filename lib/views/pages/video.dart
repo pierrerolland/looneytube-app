@@ -46,11 +46,11 @@ class _VideoPageState extends State<VideoPage> {
 
     storeSingle(widget.videoUrl, 'watched', 'watched');
 
-    _initializeVideoPlayerFuture = _controller.initialize().then((_) => {
+    _initializeVideoPlayerFuture = _controller.initialize().then((_) {
       setState(() {
         storeSingle('video', 'last', widget.videoUrl);
         _controller.play();
-      })
+      });
     });
     _controller.setLooping(false);
 
@@ -97,6 +97,8 @@ class _VideoPageState extends State<VideoPage> {
       await _controller.seekTo((await _controller.getPosition()) + const Duration(seconds: 30));
     }
     Stack _getStack() {
+      final screenSize = MediaQuery.of(context).size;
+
       if (_castStarted) {
         return Stack(children: [
           Row(
@@ -179,7 +181,7 @@ class _VideoPageState extends State<VideoPage> {
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.done) {
                     return AspectRatio(
-                      aspectRatio: _controller.value.aspectRatio,
+                      aspectRatio: 16 / 9,
                       child: _getStack(),
                     );
                   } else {
