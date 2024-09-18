@@ -8,6 +8,8 @@ import 'package:looneytube/application/local_storage.dart';
 class CastController {
   bool _sessionSet = false;
 
+  bool _videoLoaded = false;
+
   CastController({
     required this.sessionStartedListener,
     required this.sessionEndedListener,
@@ -30,12 +32,13 @@ class CastController {
 
     _session.stateStream.listen((state) {
       if (state == CastSessionState.closed) {
+        _videoLoaded = false;
         sessionEndedListener();
       }
     });
 
-    _session.messageStream.listen((message) {
-      if (message['type'] == 'RECEIVER_STATUS') {
+    _session.messageStream.listen((message) async {
+      if (message['type'] == 'RECEIVER_STATUS' && !_videoLoaded) {
         if (message['status'] != null && message['status']['applications'] != null) {
           final app = message['status']['applications'][0];
 
@@ -44,11 +47,7 @@ class CastController {
               if (namespace['name'] == CastSession.kNamespaceMedia) {
                 sessionStartedListener();
 
-                getSingleFromLocalStorage('video', 'last').then((String? videoUrl) {
-                  if (videoUrl != null) {
-                    loadMedia(videoUrl);
-                  }
-                });
+                loadLastStored();
 
                 return;
               }
@@ -66,10 +65,27 @@ class CastController {
     _sessionSet = false;
   }
 
-  loadMedia(String videoUrl) async {
-    final url = await fetchRedirectionUrl(videoUrl);
+  loadMedia(String videoUrl, String? imageUrl, String title) async {
+    final videoTrueUrl = await fetchRedirectionUrl(videoUrl);
+    var imageTrueUrl = imageUrl;
 
-    _messenger.loadMedia(url);
+    if (imageUrl != null) {
+      imageTrueUrl = await fetchRedirectionUrl(imageUrl);
+    }
+
+    _messenger.loadMedia(videoTrueUrl, imageTrueUrl, title);
+
+    _videoLoaded = true;
+  }
+
+  loadLastStored() async {
+    final videoUrl = await getSingleFromLocalStorage('last-video', 'video-url');
+    final imageUrl = await getSingleFromLocalStorage('last-video', 'image-url');
+    final title = await getSingleFromLocalStorage('last-video', 'title');
+
+    if (videoUrl != null) {
+      loadMedia(videoUrl, imageUrl, title ?? '');
+    }
   }
 
   isSessionConnected () {

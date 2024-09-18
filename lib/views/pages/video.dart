@@ -18,9 +18,18 @@ class RewindIntent extends Intent {}
 class ForwardIntent extends Intent {}
 
 class VideoPage extends StatefulWidget {
-  const VideoPage({Key? key, required this.videoUrl}) : super(key: key);
+  const VideoPage({
+    Key? key,
+    required this.videoUrl,
+    required this.imageUrl,
+    required this.title
+  }) : super(key: key);
 
   final String videoUrl;
+
+  final String? imageUrl;
+
+  final String title;
 
   @override
   _VideoPageState createState() => _VideoPageState();
@@ -38,20 +47,19 @@ class _VideoPageState extends State<VideoPage> {
     Wakelock.enable();
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
 
-    _controller = VlcPlayerController.network(
-      widget.videoUrl
-    );
-
     showCastButton();
 
     storeSingle(widget.videoUrl, 'watched', 'watched');
-    storeSingle('video', 'last', widget.videoUrl);
+    storeSingle('last-video', 'video-url', widget.videoUrl);
+    storeSingle('last-video', 'image-url', widget.imageUrl ?? '');
+    storeSingle('last-video', 'title', widget.title);
 
+    _controller = VlcPlayerController.network(
+        widget.videoUrl
+    );
     _initializeVideoPlayerFuture = _controller.initialize().then((_) {
       _controller.play();
       _controller.setLooping(false);
-    }).catchError(() => {
-      // already initialized, we don't care
     });
 
     super.initState();
@@ -118,6 +126,7 @@ class _VideoPageState extends State<VideoPage> {
             onSessionEnded: () {
               setState(() {
                 _castStarted = false;
+                Navigator.pop(context);
               });
             },
           ),

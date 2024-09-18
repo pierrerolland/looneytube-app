@@ -9,19 +9,9 @@ Future<String?> getSingleFromLocalStorage(String collection, String id) async {
 
 Future<String?> storeSingle(String collection, String id, String value) async {
   final storage = Localstore.instance;
-  final Map<String, dynamic> toStore = {};
+  final Map<String, dynamic> toStore = (await storage.collection('looneytube').doc(collection).get()) ?? {};
 
   toStore[id] = value;
-
-  final existing = await storage.collection('looneytube').doc(collection).get();
-
-  if (existing != null && existing[id] != null) {
-    existing.remove(id);
-
-    if (existing.isEmpty) {
-      await storage.collection('looneytube').doc(collection).delete();
-    }
-  }
 
   final docs = await storage.collection('looneytube').doc(collection).set(toStore);
 

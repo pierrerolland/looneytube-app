@@ -14,7 +14,11 @@ class CategoryPage extends StatelessWidget {
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) {
-          return VideoPage(videoUrl: video.fileName);
+          return VideoPage(
+            videoUrl: video.fileName,
+            imageUrl: video.picture,
+            title: video.name,
+          );
         }),
       );
     }

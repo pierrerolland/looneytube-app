@@ -16,7 +16,7 @@ class CastMessenger {
     });
   }
 
-  loadMedia(String mediaUrl) {
+  loadMedia(String mediaUrl, String? imageUrl, String title) {
     Map<String, dynamic> message = {
       'requestId': _id(),
       'type': 'LOAD',
@@ -26,6 +26,10 @@ class CastMessenger {
         'contentType': 'video/mp4',
         'metadata': {
           'metadataType': 0,
+          'title': title,
+          'images': [{
+            'url': imageUrl
+          }]
         },
       },
       'autoplay': true,
