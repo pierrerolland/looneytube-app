@@ -1,45 +1,43 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_cast_video/flutter_cast_video.dart';
-import 'package:looneytube/application/local_storage.dart';
+import 'package:looneytube/application/cast_controller.dart';
+import 'package:looneytube/views/widgets/cast_button.dart';
 
 class Cast extends StatefulWidget {
   const Cast({
     Key? key,
+    required this.hiddenButton,
     required this.onSessionStarted,
     required this.onSessionEnded
   }) : super(key: key);
 
   final VoidCallback onSessionStarted;
   final VoidCallback onSessionEnded;
+  final bool hiddenButton;
 
   @override
   _CastState createState() => _CastState();
 }
 
 class _CastState extends State<Cast> {
-  late ChromeCastController _controller;
+  late CastController _controller;
 
-  void loadVideo(String? videoUrl) {
-    if (videoUrl != null) {
-      _controller.loadMedia(videoUrl);
-      widget.onSessionStarted();
-    }
+  @override
+  void initState() {
+    setState(() {
+      _controller = CastController(
+          sessionStartedListener: widget.onSessionStarted,
+          sessionEndedListener: widget.onSessionEnded
+      );
+    });
+
+    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return ChromeCastButton(
-      color: Colors.black,
-      onButtonCreated: (controller) {
-        setState(() => _controller = controller);
-        _controller.addSessionListener();
-      },
-      onSessionStarted: () {
-        getSingleFromLocalStorage('video', 'last').then(loadVideo);
-      },
-      onSessionEnded: () {
-        widget.onSessionEnded();
-      },
+    return CastButton(
+      controller: _controller,
+      hidden: widget.hiddenButton,
     );
   }
 }

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:looneytube/application/entities/category.dart';
@@ -72,5 +73,29 @@ Future<Category> fetchCategory(String slug) async {
     return Category.fromJson(jsonDecode(response.body));
   } else {
     throw Exception('Failed to load category "$slug"');
+  }
+}
+
+Future<String> fetchRedirectionUrl(String url) async {
+  var client = HttpClient();
+
+  try {
+    var request = await client.getUrl(Uri.parse(url));
+
+    request.followRedirects = false;
+
+    var response = await request.close();
+
+    if (response.isRedirect) {
+      String? redirectUrl = response.headers.value(HttpHeaders.locationHeader);
+
+      return redirectUrl ?? url;
+    } else {
+      return url;
+    }
+  } catch (e) {
+    return url;
+  } finally {
+    client.close();
   }
 }

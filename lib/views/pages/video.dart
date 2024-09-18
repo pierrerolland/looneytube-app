@@ -45,14 +45,14 @@ class _VideoPageState extends State<VideoPage> {
     showCastButton();
 
     storeSingle(widget.videoUrl, 'watched', 'watched');
+    storeSingle('video', 'last', widget.videoUrl);
 
     _initializeVideoPlayerFuture = _controller.initialize().then((_) {
-      setState(() {
-        storeSingle('video', 'last', widget.videoUrl);
-        _controller.play();
-      });
+      _controller.play();
+      _controller.setLooping(false);
+    }).catchError(() => {
+      // already initialized, we don't care
     });
-    _controller.setLooping(false);
 
     super.initState();
   }
@@ -61,7 +61,7 @@ class _VideoPageState extends State<VideoPage> {
     setState(() {
       _castVisible = true;
     });
-    Future.delayed(const Duration(seconds: 3), () {
+    Future.delayed(const Duration(seconds: 10), () {
       setState((){
         _castVisible = false;
       });
@@ -78,7 +78,7 @@ class _VideoPageState extends State<VideoPage> {
 
   @override
   Widget build(BuildContext context) {
-    void _pauseOrPlay() {
+    void pauseOrPlay() {
       showCastButton();
       setState(() {
         if (_controller.value.isPlaying) {
@@ -88,17 +88,15 @@ class _VideoPageState extends State<VideoPage> {
         }
       });
     }
-    void _rewind() async {
+    void rewind() async {
       showCastButton();
       await _controller.seekTo((await _controller.getPosition()) - const Duration(seconds: 30));
     }
-    void _forward () async {
+    void forward () async {
       showCastButton();
       await _controller.seekTo((await _controller.getPosition()) + const Duration(seconds: 30));
     }
-    Stack _getStack() {
-      final screenSize = MediaQuery.of(context).size;
-
+    Stack getStack() {
       if (_castStarted) {
         return Stack(children: [
           Row(
@@ -111,27 +109,7 @@ class _VideoPageState extends State<VideoPage> {
             ],
           ),
           Cast(
-            onSessionStarted: () {
-              setState(() {
-                _castStarted = true;
-              });
-            },
-            onSessionEnded: () {
-              setState(() {
-                _castStarted = false;
-              });
-            },
-          ),
-        ]);
-      }
-
-      if (_castVisible) {
-        return Stack(children: [
-          VlcPlayer(
-            controller: _controller,
-            aspectRatio: 16 / 9,
-          ),
-          Cast(
+            hiddenButton: _castVisible,
             onSessionStarted: () {
               setState(() {
                 _castStarted = true;
@@ -151,16 +129,29 @@ class _VideoPageState extends State<VideoPage> {
           controller: _controller,
           aspectRatio: 16 / 9,
         ),
+        Cast(
+          hiddenButton: !_castVisible,
+          onSessionStarted: () {
+            setState(() {
+              _castStarted = true;
+            });
+          },
+          onSessionEnded: () {
+            setState(() {
+              _castStarted = false;
+            });
+          },
+        ),
       ]);
     }
 
     return GestureDetector(
-      onTap: _pauseOrPlay,
+      onTap: pauseOrPlay,
       onDoubleTapDown: (TapDownDetails details) => {
         _lastDoubleTapX = details.globalPosition.dx
       },
       onDoubleTap: () => {
-        _lastDoubleTapX < MediaQuery.of(context).size.width / 2 ? _rewind() : _forward()
+        _lastDoubleTapX < MediaQuery.of(context).size.width / 2 ? rewind() : forward()
       },
       child: FocusableActionDetector(
         autofocus: true,
@@ -169,9 +160,9 @@ class _VideoPageState extends State<VideoPage> {
           forwardKeySet: ForwardIntent()
         },
         actions: {
-          RewindIntent: CallbackAction(onInvoke: (_) => _rewind.call()),
-          ForwardIntent: CallbackAction(onInvoke: (_) => _forward.call()),
-          ActivateIntent: CallbackAction(onInvoke: (_) => _pauseOrPlay.call()),
+          RewindIntent: CallbackAction(onInvoke: (_) => rewind.call()),
+          ForwardIntent: CallbackAction(onInvoke: (_) => forward.call()),
+          ActivateIntent: CallbackAction(onInvoke: (_) => pauseOrPlay.call()),
         },
         child: Scaffold(
           backgroundColor: Colors.black,
@@ -182,7 +173,7 @@ class _VideoPageState extends State<VideoPage> {
                   if (snapshot.connectionState == ConnectionState.done) {
                     return AspectRatio(
                       aspectRatio: 16 / 9,
-                      child: _getStack(),
+                      child: getStack(),
                     );
                   } else {
                     return const Center(

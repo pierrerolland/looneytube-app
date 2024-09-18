@@ -39,7 +39,7 @@ dependencies:
   flutter_vlc_player: ^7.4.1
   flutter_dotenv: ^5.0.0
   wakelock: ^0.6.2
-  flutter_cast_video: ^1.2.0
+  cast: ^2.1.0
 
 dev_dependencies:
   flutter_test:

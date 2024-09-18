@@ -15,6 +15,11 @@ class CategoryListItemWidget extends StatelessWidget {
         onTap(category);
       },
       child: Container(
+        decoration: const BoxDecoration(
+          boxShadow: [BoxShadow(color: Colors.grey, blurRadius: 1, offset: Offset(2, 1))],
+          color: Colors.white
+        ),
+        margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 32),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -22,13 +27,13 @@ class CategoryListItemWidget extends StatelessWidget {
             Container(
               width: 128,
               height: 128,
-              child: Image.network(
-                category.picture ?? '',
-                height: 128,
-              ),
               margin: const EdgeInsets.all(8),
               decoration: const BoxDecoration(
                   borderRadius: BorderRadius.all(Radius.circular(8))
+              ),
+              child: Image.network(
+                category.picture ?? '',
+                height: 128,
               ),
             ),
             Expanded(
@@ -41,11 +46,6 @@ class CategoryListItemWidget extends StatelessWidget {
             )
           ],
         ),
-        decoration: const BoxDecoration(
-          boxShadow: [BoxShadow(color: Colors.grey, blurRadius: 1, offset: Offset(2, 1))],
-          color: Colors.white
-        ),
-        margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 32),
       )
     );
   }
