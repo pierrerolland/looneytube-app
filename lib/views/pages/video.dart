@@ -85,7 +85,7 @@ class _VideoPageState extends State<VideoPage> {
             controller: _controller,
             aspectRatio: screenSize.width / screenSize.height,
             placeholder: const Center(
-              child: CircularProgressIndicator(),
+              child: CircularProgressIndicator(color: Colors.redAccent),
             ),
         ),
       ]);
@@ -123,7 +123,7 @@ class _VideoPageState extends State<VideoPage> {
                     );
                   } else {
                     return const Center(
-                      child: CircularProgressIndicator(),
+                      child: CircularProgressIndicator(color: Colors.redAccent),
                     );
                   }
                 },

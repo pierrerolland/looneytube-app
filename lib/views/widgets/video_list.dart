@@ -103,7 +103,7 @@ class _VideoListWidgetState extends State<VideoListWidget> {
             return Text('${snapshot.error}');
           }
 
-          return Column(children: const [CircularProgressIndicator()]);
+          return const Column(children: [CircularProgressIndicator(color: Colors.redAccent)]);
         }
     );
   }

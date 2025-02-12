@@ -27,14 +27,17 @@ class _CategoryListWidgetState extends State<CategoryListWidget> {
         future: futureCollection,
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            return Column(
-                children: snapshot.data!.map((e) => CategoryListItemWidget(category: e, onTap: widget.onCategoryTap)).toList()
+            return GridView.count(
+              shrinkWrap: true,
+              childAspectRatio: 1,
+              crossAxisCount: 15,
+              children: snapshot.data!.map((e) => CategoryListItemWidget(category: e, onTap: widget.onCategoryTap)).toList(),
             );
           } else if (snapshot.hasError) {
             return Text('${snapshot.error}');
           }
 
-          return Column(children: const [CircularProgressIndicator()]);
+          return Column(children: const [CircularProgressIndicator(color: Colors.redAccent)]);
         }
     );
   }

@@ -15,37 +15,20 @@ class CategoryListItemWidget extends StatelessWidget {
         onTap(category);
       },
       child: Container(
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            Container(
-              width: 128,
-              height: 128,
-              child: Image.network(
-                category.picture ?? '',
-                height: 128,
-              ),
-              margin: const EdgeInsets.all(8),
-              decoration: const BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(8))
-              ),
-            ),
-            Expanded(
-                child: Text(
-                  category.name,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                  ),
-                )
-            )
-          ],
+        margin: const EdgeInsets.symmetric(vertical: 1, horizontal: 1),
+        child: Container(
+          width: 36,
+          height: 36,
+          margin: const EdgeInsets.all(2),
+          decoration: const BoxDecoration(
+              borderRadius: BorderRadius.all(Radius.circular(8))
+          ),
+          child: Image.network(
+            category.picture ?? '',
+            height: 36,
+            semanticLabel: category.name,
+          ),
         ),
-        decoration: const BoxDecoration(
-          boxShadow: [BoxShadow(color: Colors.grey, blurRadius: 1, offset: Offset(2, 1))],
-          color: Colors.white
-        ),
-        margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 32),
       )
     );
   }
