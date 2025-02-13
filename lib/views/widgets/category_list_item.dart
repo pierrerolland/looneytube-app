@@ -27,6 +27,22 @@ class CategoryListItemWidget extends StatelessWidget {
             category.picture ?? '',
             height: 36,
             semanticLabel: category.name,
+            loadingBuilder: (BuildContext context, Widget child,
+                ImageChunkEvent? loadingProgress) {
+              if (loadingProgress == null) return child;
+              return Column(
+                children: [
+                  CircularProgressIndicator(
+                    color: Colors.white54,
+                    value: loadingProgress.expectedTotalBytes != null
+                        ? loadingProgress.cumulativeBytesLoaded /
+                        loadingProgress.expectedTotalBytes!
+                        : null,
+                  ),
+                  Text(category.name, style: TextStyle(fontSize: 7),)
+                ],
+              );
+            },
           ),
         ),
       )

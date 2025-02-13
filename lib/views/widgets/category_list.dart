@@ -37,7 +37,7 @@ class _CategoryListWidgetState extends State<CategoryListWidget> {
             return Text('${snapshot.error}');
           }
 
-          return Column(children: const [CircularProgressIndicator(color: Colors.redAccent)]);
+          return const Column(children: [CircularProgressIndicator(color: Colors.redAccent)]);
         }
     );
   }
